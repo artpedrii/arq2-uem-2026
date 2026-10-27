@@ -1,6 +1,6 @@
 //imports
 #include <stdio.h>
-#include <time.h> 
+#include <time.h>
 #include <pthread.h>
 
 #define OBJETIVO 100000000
@@ -39,7 +39,7 @@ int main() {
 
     //**SEQUENCIAL**//
     //inicia o cálculo do tempo da versão sequencial
-    clock_gettime(CLOCK_MONOTONIC, &inicio);
+    clock_gettime(CLOCK_MONOTONIC, &inicio); 
     executar_sequencial();
     clock_gettime(CLOCK_MONOTONIC, &fim);
     //finaliza o cálculo do tempo da versão sequencial
