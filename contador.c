@@ -28,6 +28,8 @@ void* contar_com_mutex(void* arg) {
     return NULL;
 }
 
+//implementação paralela B
+
 int main() {
     //criação de variáveis e tipagem
     struct timespec inicio, fim;
@@ -61,7 +63,6 @@ int main() {
     }
     clock_gettime(CLOCK_MONOTONIC, &fim);
     //finaliza o cálculo do tempo da versão paralela A
-
     tempo_execucao_paralelaA = (fim.tv_sec - inicio.tv_sec) + (fim.tv_nsec - inicio.tv_nsec) / 1e9; //calculo do tempo em segundos da versão paralela A.
     printf("Tempo de execucao da versão paralela A (com %d threads): %f segundos\n", numero_threads, tempo_execucao_paralelaA); //imprime o tempo da versão paralela A.
 
