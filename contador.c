@@ -35,7 +35,7 @@ int main() {
     struct timespec inicio, fim;
     double tempo_execucao_sequencial;
     double tempo_execucao_paralelaA;
-    int numero_threads = 8;
+    int numero_threads = 1;
 
     //**SEQUENCIAL**//
     //inicia o cálculo do tempo da versão sequencial
