@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <pthread.h>
+#include <stdlib.h>
 
 #define OBJETIVO 100000000
 
@@ -11,7 +12,6 @@ void executar_sequencial() {
     for (long long i = 0; i < OBJETIVO; i++) {
         contador++;
     }
-    printf("Versao Sequencial -> Contador final: %lld\n", contador);
 }
 
 //implementação paralela A
@@ -29,13 +29,23 @@ void* contar_com_mutex(void* arg) {
 }
 
 //implementação paralela B
+void* contar_com_locais(void* arg) {
+    long long incrementos_desta_thread = *(long long*)arg;
+    long long contador_local = 0;
+    for (long long i = 0; i < incrementos_desta_thread; i++) {
+        contador_local++; 
+    }
+    long long *resultado = malloc(sizeof(long long));
+    *resultado = contador_local;
+    pthread_exit(resultado); 
+}
 
 int main() {
     //criação de variáveis e tipagem
     struct timespec inicio, fim;
     double tempo_execucao_sequencial;
     double tempo_execucao_paralelaA;
-    int numero_threads = 1;
+    int numero_threads = 2;
 
     //**SEQUENCIAL**//
     //inicia o cálculo do tempo da versão sequencial
@@ -65,6 +75,24 @@ int main() {
     //finaliza o cálculo do tempo da versão paralela A
     tempo_execucao_paralelaA = (fim.tv_sec - inicio.tv_sec) + (fim.tv_nsec - inicio.tv_nsec) / 1e9; //calculo do tempo em segundos da versão paralela A.
     printf("Tempo de execucao da versão paralela A (com %d threads): %f segundos\n", numero_threads, tempo_execucao_paralelaA); //imprime o tempo da versão paralela A.
+    
+    // **PARALELA B** //
+    long long contador_total_paraleloB = 0;
+    long long incrementos_por_thread_B = OBJETIVO / numero_threads;
+    pthread_t threads_b[8];
+    clock_gettime(CLOCK_MONOTONIC, &inicio);
+    for (int i = 0; i < numero_threads; i++) {
+        pthread_create(&threads_b[i], NULL, contar_com_locais, &incrementos_por_thread_B);
+    }
+    for (int i = 0; i < numero_threads; i++) {
+        long long *resultado_thread;
+        pthread_join(threads_b[i], (void**)&resultado_thread);
+        contador_total_paraleloB += *resultado_thread;
+        free(resultado_thread);
+    }
+    clock_gettime(CLOCK_MONOTONIC, &fim);
+    double tempo_execucao_paralelaB = (fim.tv_sec - inicio.tv_sec) + (fim.tv_nsec - inicio.tv_nsec) / 1e9;
+    printf("Tempo de execucao Paralela B (com %d threads): %f segundos\n", numero_threads, contador_total_paraleloB, tempo_execucao_paralelaB);
 
     return 0;
 }
