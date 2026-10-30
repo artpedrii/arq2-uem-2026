@@ -45,6 +45,7 @@ int main() {
     struct timespec inicio, fim;
     double tempo_execucao_sequencial;
     double tempo_execucao_paralelaA;
+    double tempo_execucao_paralelaB;
     int numero_threads = 2;
 
     //**SEQUENCIAL**//
@@ -77,22 +78,22 @@ int main() {
     printf("Tempo de execucao da versão paralela A (com %d threads): %f segundos\n", numero_threads, tempo_execucao_paralelaA); //imprime o tempo da versão paralela A.
     
     // **PARALELA B** //
-    long long contador_total_paraleloB = 0;
-    long long incrementos_por_thread_B = OBJETIVO / numero_threads;
-    pthread_t threads_b[8];
-    clock_gettime(CLOCK_MONOTONIC, &inicio);
+    long long contador_total_paraleloB = 0; //inicizliza o contador final que será somado.
+    long long incrementos_por_thread_B = OBJETIVO / numero_threads; //calcula a quantidade de cálculos que cada thread fará a depender do número de threads.
+    pthread_t threads_b[8]; //cria espaço para 8 threads (valor máximo de teste).
+    clock_gettime(CLOCK_MONOTONIC, &inicio); //inicia o calculo do tempo da versao paralela B
     for (int i = 0; i < numero_threads; i++) {
         pthread_create(&threads_b[i], NULL, contar_com_locais, &incrementos_por_thread_B);
-    }
+    } //cria a thread e incrementa 
     for (int i = 0; i < numero_threads; i++) {
         long long *resultado_thread;
         pthread_join(threads_b[i], (void**)&resultado_thread);
         contador_total_paraleloB += *resultado_thread;
         free(resultado_thread);
-    }
-    clock_gettime(CLOCK_MONOTONIC, &fim);
-    double tempo_execucao_paralelaB = (fim.tv_sec - inicio.tv_sec) + (fim.tv_nsec - inicio.tv_nsec) / 1e9;
-    printf("Tempo de execucao Paralela B (com %d threads): %f segundos\n", numero_threads, contador_total_paraleloB, tempo_execucao_paralelaB);
+    } //soma tudo
+    clock_gettime(CLOCK_MONOTONIC, &fim); //finaliza calculo de tempo
+    tempo_execucao_paralelaB = (fim.tv_sec - inicio.tv_sec) + (fim.tv_nsec - inicio.tv_nsec) / 1e9; //passa o tempo para segundos
+    printf("Tempo de execucao Paralela B (com %d threads): %f segundos\n", numero_threads, contador_total_paraleloB, tempo_execucao_paralelaB); //imprime tempo versao paralela B
 
     return 0;
 }

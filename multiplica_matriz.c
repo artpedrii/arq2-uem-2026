@@ -3,12 +3,13 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define N 512
+#define N 512 //define a dimensão da matriz (muda de acordo com a que foi gerada pelo outro programa).
 
-double A[N][N];
+double A[N][N]; //define os espaços das matrizes
 double B[N][N];
 double C[N][N];
 
+//função que lê a matriz do arquivo.txt
 void carregar_matriz(const char *nome_arquivo, double matriz[N][N]) {
     FILE *arquivo = fopen(nome_arquivo, "r");
     if (arquivo == NULL) {
@@ -59,9 +60,12 @@ int main() {
     //tipagem
     struct timespec inicio, fim;
     double tempo_sequencial;
+    double tempo_paralelo;
+    
     //carregando as matrizes
     carregar_matriz("A_512.txt", A);
     carregar_matriz("B_512.txt", B);
+
     //calcula tempo sequencial
     clock_gettime(CLOCK_MONOTONIC, &inicio);
     multiplicar_sequencial();
@@ -89,7 +93,8 @@ int main() {
         pthread_join(threads[i], NULL);
     }
     clock_gettime(CLOCK_MONOTONIC, &fim);
-    double tempo_paralelo = (fim.tv_sec - inicio.tv_sec) + (fim.tv_nsec - inicio.tv_nsec) / 1e9;
+    tempo_paralelo = (fim.tv_sec - inicio.tv_sec) + (fim.tv_nsec - inicio.tv_nsec) / 1e9;
     printf("Tempo paralelo (%d threads, %dx%d): %f segundos\n", num_threads, N, N, tempo_paralelo);
+
     return 0;
 }
